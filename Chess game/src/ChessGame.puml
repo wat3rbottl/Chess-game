@@ -148,9 +148,28 @@ class PieceImages{
     ~ QUEEN : String
     ~ KING : String
     + PieceImages()
+    ~ wk : ImageIcon
+    ~ bk : ImageIcon
+    ~ ...
+
 }
 
+class Queen extends Piece{
 
+    + initializeSide(int value) : void
+    + CanMove(int x, int y, Board board) : boolean
+    + queenMovesStraight(int x, int y, Board board) : boolean
+    + queenMovesDiagonal(int x, int y, Board board) : boolean
+}
+
+class Rook extends Piece{
+    - hasMoved : boolean
+    - justMoved : boolean
+    + intializeSide(int value) : void
+    + makeMove(int toX, int toY, Board board) : void
+    + canMove(int x, int y, Board board) : void
+    + castleDone(int x, Board board) : void
+}
 
 @enduml
 
