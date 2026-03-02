@@ -1,0 +1,157 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Chess Game
+
+class Board implements Clonable{
+    + ROWS : int
+    + COLUMNS : int
+    + grid : int[][]
+    + pieces : Piece[][]
+    + lastMove : Move
+    + died : Piece
+    + lastMoves : Stack<Move>
+    + deadPieces : Stack<Piece>
+    + piecesList : List<Piece>
+    + setPieceIntoBoard(int x, int y, Piece piece) : void
+    + updatePieces (int fromX, int fromY, int toX, int toY, Piece piece): void
+    + undoMove() : void
+    + getNewBoard() : Board
+}
+
+class Move implements Comparable<Move>{
+    + fromX, fromY, toX, toY : int
+    + compareTo(Move o) : int
+    + equals(Object o) : boolean
+}
+
+class Panel extends JPanel{
+    ~ game : Game
+    ~ ti, tj : int
+    ~ xx, yy : int
+    ~ panel : JPanel
+    + paintComponent(Graphics g) : void
+}
+
+' CLASS LISTENER IS DECLARED INSIDE CLASS PANEL
+' SHOW WITH ARROW WITH ANCHOR CONNECTED TO PANEL
+class Listener extends MouseAdapter{
+    + mouseClicked : void
+    + mouseMoved : void
+    + mouseDragged : void
+    + mouseReleased : void
+}
+
+class Frame extends JFrame{
+    + WIDTH : int
+    + Frame()
+}
+
+class Game{
+    + board : Board
+    ~ wk : King
+    ~ bk : King
+    ~ wPieces : ArrayList<Piece>
+    ~ bPieces : ArrayList<Piece>
+    ~ player : boolean
+    + active : Piece
+    + drag : boolean
+    + AllPieces : ArrayList<Piece>
+    ~ allPossiblesMoves : ArrayList<Move>
+    ~ allPlayersMove : List<Move>
+    + allEnemysMove : List<Move>
+    - gameOver : boolean
+    + start() : void
+    + draw(Graphics g, int x, int y, JPanel panel) : void
+    + generatePlayersTurnMoves(Board board) : void
+    + generateEnemysMoves(Board board) : void
+    + changeSide() : void
+    + selectPiece(int x, int y) : void
+    + checkMate() : void
+    + checkPlayersLegalMoves() : void
+    + drag(Piece piece, int x, int y, Graphics g, JPanel panel) : void
+    + move(int x, int y) : void
+    + drawKingInCheck(boolean isWhite, Graphics g, JPanel panel) : void
+    + drawBoard(Graphics g) : void
+    + tryToPromote(Piece p) : void
+    + showMessageForPromotion() : int
+    + choosePiece(Piece p, int choice) : void
+    + drawPossibleMoves((Graphics g), JPanel panel) : void
+    + drawPiece(Graphics g, JPanel panel) : void
+    + loadFenPosition(String fenString) : void
+    + fillPieces() : void
+    + addToBoard(int x, int y, char c, boolean isWhite) : void
+}
+
+class Bishop extends Piece{
+    + initializeSide(int value) : void
+    + canMove(int x, int y, Board board) : boolean
+    + bishopMoves(int x, int y, Board board) : boolean
+}
+
+class King extends Piece{
+    - hasMoved : boolean
+    - private rook : Rook
+    + initializeSide(int value) : void
+    + makeMove(int x, int y, Board board) : boolean
+    + canMove(int x, int y, Board board) : boolean
+    - getRook(int x, Board board) : void
+    + isInCheck() : boolean
+}
+
+class Knight extends Piece{
+    + initializeSide(int value) : void
+    + canMove(int x, int y, Board board) : boolean
+}
+
+class Pawn extends Piece{
+    - firstMove : boolean
+    - moved2Squares : boolean
+    + initializeSide(int value) : void
+    + makeMove(int toX, int toY, Board board) : boolean
+    - removeEnpassant() : void
+    + madeToTheEnd() : boolean
+    + canMove(int x, int y, Board board) : boolean
+    + capture(int x, int y, Board board) : boolean
+}
+
+abstract class Piece implements Cloneable{
+    # xCord : int
+    # yCord : int
+    # isWhite : boolean
+    # isAlive : boolean
+    # valueInTheBoard : int
+    # board : Board
+    # pieceImage : String
+    # pieceColor : Color
+    + size : int
+    # moves : List<Move>
+    # image : ImageIcon
+    + makeMove(int toX, int toY, Board board) : boolean
+    + canMove(int x, int y, Board board) : boolean
+    + alive() : boolean
+    + initializeSide(int value) : void
+    + showMoves(Graphics g, JPanel panel) : void
+    + draw(Graphics g, boolean drag, JPanel panel) : void
+    + draw2(Graphics g, boolean player, int x, int y, JPanel panel) : void
+    + fillAllPseudoLegalMoves(Board b) : void
+    + getClone() : Piece
+}
+
+class PieceImages{
+    ~ WHITECOLOR : Color
+    ~ BLACKCOLOR = Color
+    ~ PAWN : String
+    ~ ROOK : String
+    ~ KNIGHT : String
+    ~ BISHOP : String
+    ~ QUEEN : String
+    ~ KING : String
+    + PieceImages()
+}
+
+
+
+@enduml
+
+
