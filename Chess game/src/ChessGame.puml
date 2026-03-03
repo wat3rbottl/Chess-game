@@ -33,8 +33,10 @@ class Panel extends JPanel{
     + paintComponent(Graphics g) : void
 }
 
+
 ' CLASS LISTENER IS DECLARED INSIDE CLASS PANEL
 ' SHOW WITH ARROW WITH ANCHOR CONNECTED TO PANEL
+' AGGREGATION
 class Listener extends MouseAdapter{
     + mouseClicked : void
     + mouseMoved : void
@@ -46,6 +48,45 @@ class Frame extends JFrame{
     + WIDTH : int
     + Frame()
 }
+
+
+' COMPOSITION: FRAME CREATES AND OWNS PANEL
+Frame *-- Panel : Composition
+
+' AGGREGATION
+Panel o-- Listener : Aggregation
+' COMPOSITION: PANEL OWNS A GAME
+Panel *-- Game : Composition
+' INDIRECT DEPENDENCY VIA GAME.BOARD
+Panel --> Board : Indirect Dependency
+
+' GAME OWNS THE SINGLE STATIC BOARD REFERENCE
+Game *-- Board : Composition
+' GAME USES MOVE, DOESN'T OWN IT
+Game o-- Move : Association
+' GAME CREATES AND TRACKS ALL PIECES. OCP VIOLATION.
+Game o-- Piece : Association
+Game --> Piece : Dependency
+' INSTANTIATES
+Game --> PieceImages
+
+' BOARD OWNS AND CONTROLS MOVE HISTORY STACK
+Board *-- Move : Composition
+
+' MOVE HOLDS PIECE AS A FIELD
+Move o-- Piece : Aggregation
+Move <-- Game : Dependency
+
+' PIECE HOLDS A BOARD REFERENCE
+Piece o-- Board
+' PIECE CREATES AND OWNS MOVE LIST
+Piece *-- Move
+' PIECE ACCESSES GAMES STATIC MEMBERS
+Piece --> Game : Dependency
+' SoC VIOLATION. VIEW LOGIC IN MODEL CLASS
+Piece --> JPanel : Dependency
+' READS
+Piece --> PieceImages
 
 class Game{
     + board : Board
