@@ -1,6 +1,141 @@
 @startuml
+'https://plantuml.com/sequence-diagram
 
-class Board {
+title Chess Game
+
+class Board implements Cloneable{
+    - grid : int[][]
+    - pieces : Piece[][]
+    - lastMove : Move
+
+    + Board()
+    + setPieceIntoBoard(int x, int y, Piece piece)
+    + undoMove()
+    + getPiece(x, y): Piece
+    + printBoard()
+}
+
+class Move implements Comparable<Move>{
+    + fromX, fromY, toX, toY : int
+}
+
+class Panel extends JPanel{
+    ~ game : Game
+    + paintComponent(Graphics g) : void
 
 }
+
+
+' CLASS LISTENER IS DECLARED INSIDE CLASS PANEL
+' SHOW WITH ARROW WITH ANCHOR CONNECTED TO PANEL
+' AGGREGATION
+class Listener extends MouseAdapter{
+}
+
+class Frame extends JFrame{
+    +Frame()
+}
+
+
+' COMPOSITION: FRAME CREATES AND OWNS PANEL
+Frame *-- Panel
+
+' AGGREGATION
+Panel o-- Listener
+' COMPOSITION: PANEL OWNS A GAME
+Panel *-- Game
+' INDIRECT DEPENDENCY VIA GAME.BOARD
+Panel --> Board
+
+' GAME OWNS THE SINGLE STATIC BOARD REFERENCE
+Game *-- Board
+' GAME USES MOVE, DOESN'T OWN IT
+Game o-- Move
+' GAME CREATES AND TRACKS ALL PIECES. OCP VIOLATION.
+Game o-- Piece
+Game --> Piece
+' INSTANTIATES
+Game --> PieceImages
+
+' BOARD OWNS AND CONTROLS MOVE HISTORY STACK
+Board *-- Move
+
+' MOVE HOLDS PIECE AS A FIELD
+Move o-- Piece
+Move <-- Game
+
+' PIECE HOLDS A BOARD REFERENCE
+Piece o-- Board
+' PIECE CREATES AND OWNS MOVE LIST
+Piece *-- Move
+' PIECE ACCESSES GAMES STATIC MEMBERS
+Piece --> Game
+' SoC VIOLATION. VIEW LOGIC IN MODEL CLASS
+Piece --> JPanel
+' READS
+Piece --> PieceImages
+
+class Game{
+    + board : Board
+    + player : boolean
+    + active : Piece
+    + AllPieces : ArrayList<Piece>
+    + allPossiblesMoves : ArrayList<Move>
+    + gameOver : boolean
+
+    + Game()
+    + start() : void
+    + draw(Graphics g, int x, int y, JPanel panel) : void
+    + generatePlayersTurnMoves(Board board) : void
+    + checkMate() : void
+    + checkPlayersLegalMoves() : void
+    + move(int x, int y) : void
+}
+
+class Bishop extends Piece{
+}
+
+class King extends Piece{
+    +isinCheck : boolean
+}
+
+class Knight extends Piece{
+}
+
+class Pawn extends Piece{
+    - firstMove : boolean
+    - moved2Squares : boolean
+    - removeEnpassant() : void
+}
+
+abstract class Piece implements Cloneable{
+    # xCord : int
+    # yCord : int
+    # isWhite : boolean
+    # board : Board
+    # moves : List<Move>
+    # image : ImageIcon
+
+    + Piece(x:int, y:int, isWhite:boolean, board:Board, value:int)
+    + makeMove(int toX, int toY, Board board) : boolean
+    + canMove(int x, int y, Board board) : boolean
+    + fillAllPseudoLegalMoves(Board b) : void
+    + getClone() : Piece
+}
+
+class PieceImages{
+}
+
+class Queen extends Piece{
+    + queenMovesStraight(int x, int y, Board board) : boolean
+    + queenMovesDiagonal(int x, int y, Board board) : boolean
+}
+
+class Rook extends Piece{
+    + hasMoved : boolean
+    + castleDone(int x, Board board) : void
+}
+
 @enduml
+
+
